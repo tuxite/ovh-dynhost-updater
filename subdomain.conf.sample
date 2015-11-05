@@ -1,0 +1,11 @@
+[zone]
+; the domain name ie: example.org
+name=
+
+[subdomain]
+; get these values in the API Console
+; https://api.ovh.com/console/
+; GET /domain/zone/{zoneName}/dynHost/record
+name=
+id=
+
