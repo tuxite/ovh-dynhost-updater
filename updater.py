@@ -119,7 +119,7 @@ def get_dynhost_ip():
 def set_dynhost_ip(ip):
     """Set the IP using the OVH API."""
     # Get the conf
-    paths, subdomain = get_conf()
+    path, subdomain = get_conf()
 
     if not path or not subdomain:
         logger.error("No path or subdomain!")
