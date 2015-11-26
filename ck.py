@@ -20,8 +20,9 @@ if __name__ == "__main__":
     # Request RO, /me API access
     access_rules = [
         #{'method': 'GET', 'path': "/me"},
-        {'method': 'GET', 'path': path},
-        {'method': 'PUT', 'path': path},
+        {'method': 'GET', 'path': path['update']},
+        {'method': 'PUT', 'path': path['update']},
+        {'method': 'POST', 'path': path['refresh']}
     ]
 
     # Request token

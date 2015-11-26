@@ -30,8 +30,9 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
-# The path in the OVH API (api.ovh.com)
-PATH = "/domain/zone/{zonename}/dynHost/record/{id}"
+# The paths in the OVH API (api.ovh.com)
+UPDATE_PATH = "/domain/zone/{zonename}/dynHost/record/{id}"
+REFRESH_PATH = "/domain/zone/{zonename}/refresh"
 
 # The file where the IP will be stored
 # As the script doesn't run continuosly, we need to retreive the IP somewhere...
@@ -65,7 +66,10 @@ def get_conf():
         logger.error("Configuration File Error: %s", error)
         return None, None
 
-    path = PATH.format(zonename=zonename, id=dynhost_id)
+    path = {
+        'update': UPDATE_PATH.format(zonename=zonename, id=dynhost_id),
+        'refresh': REFRESH_PATH.format(zonename=zonename)
+        }
 
     return path, subdomain
 
@@ -104,7 +108,7 @@ def get_dynhost_ip():
     """Get the DynHost IP record from OVH server using the API."""
     client = ovh.Client()
 
-    dynhost_current = client.get(PATH)
+    dynhost_current = client.get(UPDATE_PATH)
 
     if 'ip' in dynhost_current:
         return dynhost_current['ip']
@@ -115,7 +119,7 @@ def get_dynhost_ip():
 def set_dynhost_ip(ip):
     """Set the IP using the OVH API."""
     # Get the conf
-    path, subdomain = get_conf()
+    paths, subdomain = get_conf()
 
     if not path or not subdomain:
         logger.error("No path or subdomain!")
@@ -126,7 +130,8 @@ def set_dynhost_ip(ip):
     client = ovh.Client()
 
     try:
-        client.put(path, **params)
+        client.put(path['update'], **params)
+        client.post(path['refresh'])
     except ovh.exceptions.NotGrantedCall, error:
         logger.error("OVH Not Granted Call: %s", error)
         return False
